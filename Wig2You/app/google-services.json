@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "857916904270",
+    "project_id": "wig2you-20b67",
+    "storage_bucket": "wig2you-20b67.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:857916904270:android:00751819c4815e883c441f",
+        "android_client_info": {
+          "package_name": "com.example.wig2you"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "857916904270-5u08000igrq5kv8s7bt2j4qom3pvqe0u.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBavCIF46D30zGnk7NTwwq2YI2PHfkrOlc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "857916904270-5u08000igrq5kv8s7bt2j4qom3pvqe0u.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
