@@ -17,7 +17,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
+import com.example.wig2you.Model.Model;
 import com.example.wig2you.Model.User;
 import com.example.wig2you.Model.Wig;
 import com.example.wig2you.R;
@@ -35,6 +37,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.util.Collection;
+
 public class allWigsOnMapFragment extends Fragment implements OnMapReadyCallback {
     View view;
     AllWigsOnMapViewModel allWigsOnMapViewModel;
@@ -48,8 +52,35 @@ public class allWigsOnMapFragment extends Fragment implements OnMapReadyCallback
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_all_wigs_on_map, container, false);
+
         allWigsOnMapViewModel  = new ViewModelProvider(this).
                 get(AllWigsOnMapViewModel.class);
+        allWigsOnMapViewModel.getWigsData().observe(getViewLifecycleOwner(),
+                (data)->{
+                    allWigsOnMapViewModel.InitUsersDic();
+                    markSellers();
+                });
+        allWigsOnMapViewModel.getUsersData().observe(getViewLifecycleOwner(),
+                (data)->{
+                    markSellers();
+                });
+
+        ProgressBar pb = view.findViewById(R.id.allWigsOnMap_progressBar);
+        pb.setVisibility(View.GONE);
+
+        Model.instance.loadingState.observe(getViewLifecycleOwner(),(state)->{
+            switch(state){
+                case loaded:
+                    pb.setVisibility(View.GONE);
+                    break;
+                case loading:
+                    pb.setVisibility(View.VISIBLE);
+                    break;
+                case error:
+                    //TODO: display error message
+            }
+        });
+
 
         FloatingActionButton zoomInBtn = view.findViewById(R.id.allWigsOnMap_zoomInButton);
         client = new FusedLocationProviderClient(getActivity());
@@ -87,23 +118,29 @@ public class allWigsOnMapFragment extends Fragment implements OnMapReadyCallback
         mGoogleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latStartLocation, 10));
         mGoogleMap.setMyLocationEnabled(true);
         mGoogleMap.getUiSettings().setZoomControlsEnabled(true);
-        for (User u: allWigsOnMapViewModel.GetDicUsers()) {
-            LatLng location = new LatLng(u.getLatitude(),u.getLongitude());
-            MarkerOptions markerOptions = new MarkerOptions().position(location);
-            mGoogleMap.addMarker(markerOptions);
-        }
+        allWigsOnMapViewModel.InitUsersDic();
+        markSellers();
 
-        mGoogleMap.setOnMarkerClickListener(marker -> {
+        mGoogleMap.setOnInfoWindowClickListener(marker -> {
             LatLng latLng = marker.getPosition();
             allWigsOnMapViewModel.getUserByLocation(latLng);
             Navigation.findNavController(view).navigate(R.id.allWigs_Fragment);
-            return true;
         });
     }
 
+    private void markSellers(){
+        if(mGoogleMap!=null){
+            mGoogleMap.clear();
+            for (User u: allWigsOnMapViewModel.GetDicUsers()) {
+                LatLng location = new LatLng(u.getLatitude(),u.getLongitude());
+                MarkerOptions markerOptions = new MarkerOptions().position(location).title(u.getName());
+                mGoogleMap.addMarker(markerOptions);
+            }
+        }
+    }
+
     private void permission() {
-        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
-            ;
+        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED);
         else {
             ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 44);
         }

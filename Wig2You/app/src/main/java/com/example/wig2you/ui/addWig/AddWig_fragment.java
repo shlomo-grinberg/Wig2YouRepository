@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,6 +28,7 @@ import com.example.wig2you.R;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 public class AddWig_fragment extends Fragment {
     View view;
@@ -72,10 +74,17 @@ public class AddWig_fragment extends Fragment {
 
         purchaseDate = view.findViewById(R.id.addWig_et_tv_purchaseDate);
 
-        LocalDateTime currentDate = LocalDateTime.now();
-        int selectedYear = currentDate.getYear();
-        int selectedMonth = currentDate.getMonthValue()-1;
-        int selectedDayOfMonth =currentDate.getDayOfMonth();
+        LocalDateTime currentDate = null;
+        int selectedDayOfMonth = 0;
+        int selectedMonth = 0;
+        int selectedYear = 0;
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            currentDate = LocalDateTime.now();
+            selectedYear = currentDate.getYear();
+            selectedMonth = currentDate.getMonthValue()-1;
+            selectedDayOfMonth = currentDate.getDayOfMonth();
+        }
 
         DatePickerDialog.OnDateSetListener dateSetListener = new DatePickerDialog.OnDateSetListener() {
             @Override
@@ -113,15 +122,17 @@ public class AddWig_fragment extends Fragment {
         wig.setHowToUse(howToUse.getText().toString());
         wig.setKosher(kosher.getText().toString());
         wig.setAvailable(true);
+        UUID uuid = UUID.randomUUID();
+        wig.setId(uuid.toString());
         wig.setOwner(Model.instance.getUser().id);
         Model.instance.saveWig(wig, new Model.OnCompleteListener() {
             @Override
             public void onComplete() {
                 if (imageBitmap!=null){
-                    Model.instance.uploadImage(imageBitmap,wig.style,(url)->{
+                    Model.instance.uploadImage(imageBitmap,wig.getId(),(url)->{
                         wig.setImage(url);
                         Model.instance.saveWig(wig,()->Navigation.findNavController(view).navigate(R.id.myAccountFragment));
-                    });    //TODO: change to ID
+                    });
                 }
                 else  {
                     Navigation.findNavController(view).navigate(R.id.myAccountFragment);

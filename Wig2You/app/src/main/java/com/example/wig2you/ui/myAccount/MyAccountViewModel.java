@@ -23,11 +23,26 @@ public class MyAccountViewModel extends ViewModel {
 
     public List<Wig> getFilterData() {
         List<Wig> newWigList = new LinkedList<>();
-        for (Wig w : wigList.getValue()) {
-            if(w.getOwner()!=null && w.getOwner().equals(Model.instance.getUser().id)){
-                newWigList.add(w);
+        if(wigList.getValue()!=null){
+            for (Wig w : wigList.getValue()) {
+                if(w.getOwner()!=null && w.getOwner().equals(Model.instance.getUser().id)){
+                    newWigList.add(w);
+                }
             }
         }
         return newWigList;
+    }
+
+    public int getPosition(int pos){
+        int currentPosition = pos;
+            String wigID = getFilterData().get(pos).getId();
+            for (int i=0;i<wigList.getValue().size();i++){
+                if(wigList.getValue().get(i).getId().equals(wigID)){
+                    currentPosition = i;
+                    break;
+                }
+            }
+
+        return currentPosition;
     }
 }

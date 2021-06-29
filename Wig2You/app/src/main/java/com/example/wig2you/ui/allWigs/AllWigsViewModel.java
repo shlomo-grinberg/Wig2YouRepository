@@ -48,5 +48,18 @@ public class AllWigsViewModel extends ViewModel {
             return wigList.getValue();
         }
     }
+    public int getPosition(int pos){
+        int currentPosition = pos;
+        if(usersWigsList!=null){
+            String wigID = usersWigsList.get(pos).getId();
+            for (int i=0;i<wigList.getValue().size();i++){
+                if(wigList.getValue().get(i).getId().equals(wigID)){
+                    currentPosition = i;
+                    break;
+                }
+            }
+        }
+        return currentPosition;
+    }
 
 }

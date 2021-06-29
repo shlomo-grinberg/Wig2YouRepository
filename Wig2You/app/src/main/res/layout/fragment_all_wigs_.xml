@@ -56,4 +56,15 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/allWigs_ImageBtn_mapBtn" />
+
+    <ImageButton
+        android:id="@+id/allWigs_ImageBtn_myAccount"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginStart="8dp"
+        android:background="#EA947E"
+        android:src="@drawable/ic_baseline_account_balance_24"
+        app:layout_constraintBottom_toBottomOf="@+id/allWigs_ImageBtn_ReplayAllWigs"
+        app:layout_constraintStart_toEndOf="@+id/allWigs_ImageBtn_ReplayAllWigs"
+        app:layout_constraintTop_toTopOf="@+id/allWigs_ImageBtn_ReplayAllWigs" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,8 +1,15 @@
 package com.example.wig2you.Model;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
+
+import com.example.wig2you.MyApplication;
+import com.google.firebase.Timestamp;
+import com.google.firebase.firestore.FieldValue;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -25,6 +32,14 @@ public class User implements JsonUsersModel{
     double latitude;
     double longitude;
     public boolean isAvailable;
+    public Long lastUpdated;
+
+    public void setLastUpdated(Long lastUpdated) {
+        this.lastUpdated = lastUpdated;
+    }
+    public Long getLastUpdated() {
+        return lastUpdated;
+    }
 
     final static String ID = "id";
     final static String NAME = "name";
@@ -36,6 +51,7 @@ public class User implements JsonUsersModel{
     final static String LATITUDE = "latitude";
     final static String LONGITUDE = "longitude";
     final static String IS_AVAILABLE = "isAvailable";
+    final static String LAST_UPDATED = "lastUpdated";
 
 
     public Map<String, Object> toJson() {
@@ -50,6 +66,8 @@ public class User implements JsonUsersModel{
         json.put(LATITUDE, latitude);
         json.put(LONGITUDE, longitude);
         json.put(IS_AVAILABLE,isAvailable);
+        json.put(LAST_UPDATED, FieldValue.serverTimestamp());
+
         return json;
     }
 
@@ -65,6 +83,11 @@ public class User implements JsonUsersModel{
         user.latitude = (double)json.get(LATITUDE);
         user.longitude = (double)json.get(LONGITUDE);
         user.isAvailable = (boolean)json.get(IS_AVAILABLE);
+        Timestamp ts = (Timestamp) json.get(LAST_UPDATED);
+        if(ts!=null)
+            user.lastUpdated = new Long(ts.getSeconds());
+        else
+            user.lastUpdated = new Long(0);
 
         return user;
     }
@@ -148,5 +171,18 @@ public class User implements JsonUsersModel{
 
     public void setLongitude(double longitude) {
         this.longitude = longitude;
+    }
+
+    private static final String USER_LAST_UPDATE = "UserLastUpdate";
+
+    static public void setLocalLastUpdateTime(Long ts){
+        SharedPreferences.Editor editor = MyApplication.context.getSharedPreferences("TAG", Context.MODE_PRIVATE).edit();
+        editor.putLong(USER_LAST_UPDATE,ts);
+        editor.commit();
+    }
+
+    static public Long getLocalLastUpdateTime(){
+        return MyApplication.context.getSharedPreferences("TAG", Context.MODE_PRIVATE)
+                .getLong(USER_LAST_UPDATE,0);
     }
 }

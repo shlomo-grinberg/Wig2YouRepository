@@ -10,6 +10,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -41,10 +42,11 @@ public class ModelFirebase {
     }
 
     //users
-    public static void getAllUsers(GetAllUsersListener listener) {
+    public static void getAllUsers(Long since, GetAllUsersListener listener) {
 
             FirebaseFirestore db = FirebaseFirestore.getInstance();
             db.collection(usersCollection)
+                    .whereGreaterThanOrEqualTo(User.LAST_UPDATED,new Timestamp(since,0))
                     .get()
                     .addOnCompleteListener(task -> {
                         List<User> list = new LinkedList<User>();
@@ -63,14 +65,20 @@ public class ModelFirebase {
     }
     public static void saveUser(User user ,Model.OnCompleteListener listener) {
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
-        mAuth.createUserWithEmailAndPassword(user.email, user.password).addOnSuccessListener(new OnSuccessListener<AuthResult>() {
-            @Override
-            public void onSuccess(AuthResult authResult) {
-                FirebaseUser firebaseUser = mAuth.getCurrentUser();
-                user.setId(firebaseUser.getUid());
-                save(user,()->listener.onComplete());
-            }
-        });
+        if(user.getId()==null){
+            mAuth.createUserWithEmailAndPassword(user.getEmail(), user.getPassword()).addOnSuccessListener(new OnSuccessListener<AuthResult>() {
+                @Override
+                public void onSuccess(AuthResult authResult) {
+                    FirebaseUser firebaseUser = mAuth.getCurrentUser();
+                    user.setId(firebaseUser.getUid());
+                    save(user,listener);
+                }
+            });
+        }
+        else {
+            save(user,listener);
+        }
+
     }
 
     private static void save(User user, Model.OnCompleteListener listener) {
@@ -80,6 +88,7 @@ public class ModelFirebase {
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
+                        Model.instance.setUser(user);
                         listener.onComplete();
                     }
                 })
@@ -93,9 +102,10 @@ public class ModelFirebase {
 
 
     //wigs
-    public static void getAllWigs(GetAllWigsListener listener) {
+    public static void getAllWigs(Long since, GetAllWigsListener listener) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection(wigsCollection)
+                .whereGreaterThanOrEqualTo(User.LAST_UPDATED,new Timestamp(since,0))
                 .get()
                 .addOnCompleteListener(task -> {
                     List<Wig> list = new LinkedList<Wig>();
@@ -113,7 +123,7 @@ public class ModelFirebase {
 
     public static void saveWig(Wig wig ,Model.OnCompleteListener listener) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection(wigsCollection).document(wig.getStyle()).set(wig.toJson())
+        db.collection(wigsCollection).document(wig.getId()).set(wig.toJson())
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {

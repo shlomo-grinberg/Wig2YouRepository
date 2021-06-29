@@ -65,7 +65,7 @@ public class MyAccountFragment extends Fragment {
         adapter.setOnClickListener(new OnItemClickListener() {
             @Override
             public void onClick(int position) {
-                MyAccountFragmentDirections.ActionMyAccountFragmentToWigDetailsOwnFragment data = MyAccountFragmentDirections.actionMyAccountFragmentToWigDetailsOwnFragment(position);
+                MyAccountFragmentDirections.ActionMyAccountFragmentToWigDetailsOwnFragment data = MyAccountFragmentDirections.actionMyAccountFragmentToWigDetailsOwnFragment(myAccountViewModel.getPosition(position));
                 Navigation.findNavController(view).navigate(data);
             }
         });

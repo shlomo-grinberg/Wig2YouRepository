@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -27,6 +28,7 @@ public class wigDetailsOtherFragment extends Fragment {
     TextView howToUse;
     TextView kosher;
     ImageView image;
+    Button contactPhoneBtn;
     
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -34,9 +36,13 @@ public class wigDetailsOtherFragment extends Fragment {
 
         wigDetailsOtherViewModel  = new ViewModelProvider(this).
                 get(WigDetailsOtherViewModel.class);
+        wigDetailsOtherViewModel.getWigsData().observe(getViewLifecycleOwner(),(wigs)->{
+        });
+        wigDetailsOtherViewModel.getUsersData().observe(getViewLifecycleOwner(),(users)->{
+        });
 
         int position = wigDetailsOtherFragmentArgs.fromBundle(getArguments()).getWigPosition();
-        Wig wig = wigDetailsOtherViewModel.getData().getValue().get(position);
+        Wig wig = wigDetailsOtherViewModel.getWigsData().getValue().get(position);
 
         View view = inflater.inflate(R.layout.fragment_wig_details_other, container, false);
 
@@ -49,6 +55,7 @@ public class wigDetailsOtherFragment extends Fragment {
         howToUse=view.findViewById(R.id.wigDetailsOther_et_howToUse);
         kosher=view.findViewById(R.id.wigDetailsOther_et_kosher);
         image=view.findViewById(R.id.wigDetailsOther_imgView_wig_image);
+        contactPhoneBtn = view.findViewById(R.id.wigDetailsOther_Btn_contactPhone);
 
         length.setText(wig.getLength());
         style.setText(wig.getStyle());
@@ -63,6 +70,14 @@ public class wigDetailsOtherFragment extends Fragment {
             Picasso.get().load(wig.getImage()).placeholder(R.drawable.avatar_woman).into(image);
         }
 
+        contactPhoneBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(wig.getOwner()!=null){
+                    contactPhoneBtn.setText(wigDetailsOtherViewModel.getPhone(wig.getOwner()));
+                }
+            }
+        });
 
         return view;
     }

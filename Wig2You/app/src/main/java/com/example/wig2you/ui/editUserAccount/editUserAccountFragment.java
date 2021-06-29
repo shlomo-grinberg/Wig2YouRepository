@@ -64,14 +64,16 @@ public class editUserAccountFragment extends Fragment {
         name.setText(user.name);
         address.setText(user.address);
         phone.setText(user.phone);
-        email.setText(user.phone);
-        password.setText(user.phone);
+        email.setText(user.email);
+        password.setText(user.password);
+
         image.setImageResource(R.drawable.avatar_woman);
         if(user.getImage()!=null && !user.getImage().equals("")){
             Picasso.get().load(user.getImage()).placeholder(R.drawable.avatar_woman).into(image);
         }
-//        image = view.findViewById(R.id.editUserAccount_et_imgView_user_image);
-
+        if(imageBitmap!=null){
+            image.setImageBitmap(imageBitmap);
+        }
 
         saveBtn.setOnClickListener(v -> {
             save();
@@ -98,25 +100,29 @@ public class editUserAccountFragment extends Fragment {
     }
 
     private void save() {
-        User user = new User();
-        user.setName(name.getText().toString());
-        user.setAddress(address.getText().toString());
-        user.setPhone(phone.getText().toString());
-        user.setEmail(email.getText().toString());
-        user.setPassword(password.getText().toString());
-        user.setLatitude(latitude);
-        user.setLongitude(longitude);
-        user.setAvailable(true);
+        User newUser = new User();
+        newUser.setName(name.getText().toString());
+        newUser.setAddress(address.getText().toString());
+        newUser.setPhone(phone.getText().toString());
+        newUser.setEmail(email.getText().toString());
+        newUser.setPassword(password.getText().toString());
+        newUser.setLatitude(latitude);
+        newUser.setLongitude(longitude);
+        newUser.setAvailable(true);
+        newUser.setId(user.getId());
+        if(user.getImage()!=null){
+            newUser.setImage(user.getImage());
+        }
         image.setEnabled(false);
 
-        Model.instance.saveUser(user, new Model.OnCompleteListener() {
+        Model.instance.saveUser(newUser, new Model.OnCompleteListener() {
             @Override
             public void onComplete() {
                 if (imageBitmap!=null){
-                    Model.instance.uploadImage(imageBitmap,user.id,(url)->{
-                        user.setImage(url);
-                        Model.instance.saveUser(user,()->Navigation.findNavController(view).navigate(R.id.myAccountFragment));
-                    });    //TODO: change to ID
+                    Model.instance.uploadImage(imageBitmap,newUser.getId(),(url)->{
+                        newUser.setImage(url);
+                        Model.instance.saveUser(newUser,()->Navigation.findNavController(view).navigate(R.id.myAccountFragment));
+                    });
                 }
                 else  {
                     Navigation.findNavController(view).navigate(R.id.myAccountFragment);

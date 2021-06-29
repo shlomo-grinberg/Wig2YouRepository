@@ -31,6 +31,7 @@ import java.io.IOException;
 public class editWig_Fragment extends Fragment {
     EditWigViewModel editWigViewModel;
     View view;
+    Wig wig;
     EditText length;
     EditText style;
     EditText variety;
@@ -52,7 +53,7 @@ public class editWig_Fragment extends Fragment {
                 get(EditWigViewModel.class);
 
         int position = editWig_FragmentArgs.fromBundle(getArguments()).getWigPosition2();
-        Wig wig = editWigViewModel.getData().getValue().get(position);
+        wig = editWigViewModel.getData().getValue().get(position);
 
         view = inflater.inflate(R.layout.fragment_edit_wig_, container, false);
 
@@ -127,24 +128,29 @@ public class editWig_Fragment extends Fragment {
     }
 
     private void save() {
-        Wig wig = new Wig();
-        wig.setPrice(Double.parseDouble(price.getText().toString()));
-        wig.setVariety(variety.getText().toString());
-        wig.setLength(length.getText().toString());
-        wig.setStyle(style.getText().toString());
-        wig.setMaker(maker.getText().toString());
-        wig.setPurchaseDate(purchaseDate.getText().toString());
-        wig.setHowToUse(howToUse.getText().toString());
-        wig.setKosher(kosher.getText().toString());
-        wig.setAvailable(true);
-        Model.instance.saveWig(wig, new Model.OnCompleteListener() {
+        Wig newWig = new Wig();
+        newWig.setPrice(Double.parseDouble(price.getText().toString()));
+        newWig.setVariety(variety.getText().toString());
+        newWig.setLength(length.getText().toString());
+        newWig.setStyle(style.getText().toString());
+        newWig.setMaker(maker.getText().toString());
+        newWig.setPurchaseDate(purchaseDate.getText().toString());
+        newWig.setHowToUse(howToUse.getText().toString());
+        newWig.setKosher(kosher.getText().toString());
+        newWig.setAvailable(true);
+        newWig.setId(wig.getId());
+        newWig.setOwner(wig.getOwner());
+        if(wig.getImage()!=null){
+            newWig.setImage(wig.getImage());
+        }
+        Model.instance.saveWig(newWig, new Model.OnCompleteListener() {
             @Override
             public void onComplete() {
                 if (imageBitmap!=null){
-                    Model.instance.uploadImage(imageBitmap,wig.style,(url)->{
-                        wig.setImage(url);
-                        Model.instance.saveWig(wig,()->Navigation.findNavController(view).navigate(R.id.myAccountFragment));
-                    });    //TODO: change to ID
+                    Model.instance.uploadImage(imageBitmap,newWig.getId(),(url)->{
+                        newWig.setImage(url);
+                        Model.instance.saveWig(newWig,()->Navigation.findNavController(view).navigate(R.id.myAccountFragment));
+                    });
                 }
                 else  {
                     Navigation.findNavController(view).navigate(R.id.myAccountFragment);

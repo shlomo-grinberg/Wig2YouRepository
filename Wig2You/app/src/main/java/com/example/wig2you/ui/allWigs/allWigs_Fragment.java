@@ -1,5 +1,6 @@
 package com.example.wig2you.ui.allWigs;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,6 +32,7 @@ public class allWigs_Fragment extends Fragment {
     MyAdapter adapter;
     ImageButton replayAll;
     ImageButton mapBtn;
+    ImageButton myAccountBtn;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -50,28 +52,26 @@ public class allWigs_Fragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_all_wigs_, container, false);
         mapBtn = view.findViewById(R.id.allWigs_ImageBtn_mapBtn);
         replayAll = view.findViewById(R.id.allWigs_ImageBtn_ReplayAllWigs);
+        myAccountBtn = view.findViewById(R.id.allWigs_ImageBtn_myAccount);
 
         replayAll.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 AllWigsViewModel.setUserSeller(null);
-                FragmentManager manager = getActivity().getSupportFragmentManager();
-                FragmentTransaction ft = manager.beginTransaction();
-                Fragment newFragment = getParentFragment();
-                getParentFragment().onDestroy();
-                ft.remove(getParentFragment());
-                ft.replace(container.getId(),newFragment);
-                //container is the ViewGroup of current fragment
-                ft.addToBackStack(null);
-                ft.commit();
+                Navigation.findNavController(view).navigate(R.id.allWigs_Fragment);
             }
         });
-
+        myAccountBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Navigation.findNavController(view).navigate(R.id.myAccountFragment);
+            }
+        });
         mapBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Navigation.findNavController(view).navigate(R.id.AllWigsOnMapFragment);
-            }
+               }
         });
 
         RecyclerView wigList = view.findViewById(R.id.allWigs_recyclerView);
@@ -85,7 +85,7 @@ public class allWigs_Fragment extends Fragment {
         adapter.setOnClickListener(new OnItemClickListener() {
             @Override
             public void onClick(int position) {
-                allWigs_FragmentDirections.ActionAllWigsFragmentToWigDetailsOtherFragment data = allWigs_FragmentDirections.actionAllWigsFragmentToWigDetailsOtherFragment(position);
+                allWigs_FragmentDirections.ActionAllWigsFragmentToWigDetailsOtherFragment data = allWigs_FragmentDirections.actionAllWigsFragmentToWigDetailsOtherFragment(allWigsViewModel.getPosition(position));
                 Navigation.findNavController(view).navigate(data);
             }
         });

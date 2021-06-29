@@ -1,8 +1,15 @@
 package com.example.wig2you.Model;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
+
+import com.example.wig2you.MyApplication;
+import com.google.firebase.Timestamp;
+import com.google.firebase.firestore.FieldValue;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,7 +33,7 @@ public class Wig implements JsonWigsModel{
     public String howToUse;
     public String kosher;
     public String image;
-//    public String contactPhoneNumber;
+    public Long lastUpdated;
     public boolean isAvailable;
 
     final static String ID = "id";
@@ -40,8 +47,8 @@ public class Wig implements JsonWigsModel{
     final static String HOW_TO_USE = "howToUse";
     final static String KOSHER = "kosher";
     final static String IMAGE = "image";
-//    final static String CONTACT_PHONE_NUMBER = "contactPhoneNumber";
     final static String IS_AVAILABLE = "isAvailable";
+    final static String LAST_UPDATED = "lastUpdated";
 
     public Map<String, Object> toJson() {
         Map<String, Object> json = new HashMap<>();
@@ -56,8 +63,8 @@ public class Wig implements JsonWigsModel{
         json.put(HOW_TO_USE, howToUse);
         json.put(KOSHER, kosher);
         json.put(IMAGE, image);
-//        json.put(CONTACT_PHONE_NUMBER, contactPhoneNumber);
         json.put(IS_AVAILABLE,isAvailable);
+        json.put(LAST_UPDATED, FieldValue.serverTimestamp());
         return json;
     }
 
@@ -74,9 +81,12 @@ public class Wig implements JsonWigsModel{
         wig.howToUse = (String)json.get(HOW_TO_USE);
         wig.kosher = (String)json.get(KOSHER);
         wig.image = (String)json.get(IMAGE);
-//        wig.contactPhoneNumber = (String)json.get(CONTACT_PHONE_NUMBER);
         wig.isAvailable = (boolean)json.get(IS_AVAILABLE);
-
+        Timestamp ts = (Timestamp) json.get(LAST_UPDATED);
+        if(ts!=null)
+            wig.lastUpdated = new Long(ts.getSeconds());
+        else
+            wig.lastUpdated = new Long(0);
         return wig;
     }
 
@@ -161,14 +171,6 @@ public class Wig implements JsonWigsModel{
         this.kosher = kosher;
     }
 
-//    public String getContactPhoneNumber() {
-//        return contactPhoneNumber;
-//    }
-//
-//    public void setContactPhoneNumber(String contactPhoneNumber) {
-//        this.contactPhoneNumber = contactPhoneNumber;
-//    }
-
     public boolean isAvailable() {
         return isAvailable;
     }
@@ -183,5 +185,18 @@ public class Wig implements JsonWigsModel{
 
     public void setImage(String image) {
         this.image = image;
+    }
+
+    private static final String WIG_LAST_UPDATE = "WigLastUpdate";
+
+    static public void setLocalLastUpdateTime(Long ts){
+        SharedPreferences.Editor editor = MyApplication.context.getSharedPreferences("TAG", Context.MODE_PRIVATE).edit();
+        editor.putLong(WIG_LAST_UPDATE,ts);
+        editor.commit();
+    }
+
+    static public Long getLocalLastUpdateTime(){
+        return MyApplication.context.getSharedPreferences("TAG", Context.MODE_PRIVATE)
+                .getLong(WIG_LAST_UPDATE,0);
     }
 }

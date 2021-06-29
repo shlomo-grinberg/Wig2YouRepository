@@ -19,6 +19,7 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
 import com.example.wig2you.R;
+import com.example.wig2you.ui.editUserAccount.editUserAccountFragment;
 import com.example.wig2you.ui.myAccount.MyAccountFragmentDirections;
 import com.example.wig2you.ui.signUp.SignUpFragment;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -61,6 +62,8 @@ public class SaveLocationMapFragment extends Fragment implements OnMapReadyCallb
             public void onClick(View v) {
                 SignUpFragment.latitude = latitude;
                 SignUpFragment.longitude = longitude;
+                editUserAccountFragment.latitude = latitude;
+                editUserAccountFragment.longitude = longitude;
                 Navigation.findNavController(view).navigateUp();
             }
         });
@@ -102,10 +105,6 @@ public class SaveLocationMapFragment extends Fragment implements OnMapReadyCallb
             this.latitude = latLng.latitude;
             this.longitude = latLng.longitude;
         });
-//        mGoogleMap.setOnMarkerClickListener(marker -> {
-//            Log.d("TAg","Clicked My");
-//            return false;
-//        });
     }
 
     private void permission() {

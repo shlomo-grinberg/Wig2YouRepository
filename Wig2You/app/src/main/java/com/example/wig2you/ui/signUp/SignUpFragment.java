@@ -96,10 +96,10 @@ public class SignUpFragment extends Fragment{
             @Override
             public void onComplete() {
                 if (imageBitmap!=null){
-                    Model.instance.uploadImage(imageBitmap,user.id,(url)->{
+                    Model.instance.uploadImage(imageBitmap,user.getId(),(url)->{
                         user.setImage(url);
                         Model.instance.saveUser(user,()->Navigation.findNavController(view).navigate(R.id.myAccountFragment));
-                    });    //TODO: change to ID
+                    });
                 }
                 else  {
                     Navigation.findNavController(view).navigate(R.id.myAccountFragment);

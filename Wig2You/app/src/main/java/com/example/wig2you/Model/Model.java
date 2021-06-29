@@ -7,11 +7,14 @@ import androidx.lifecycle.MutableLiveData;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class Model {
 
     final public static  Model instance = new Model();
     User user;
+    ExecutorService executorService = Executors.newSingleThreadExecutor();
 
     public enum LoadingState{
         loaded,
@@ -35,35 +38,87 @@ public class Model {
     }
 
     //users
-    MutableLiveData<List<User>> allUsers = new MutableLiveData<List<User>>(new LinkedList<User>());
+    LiveData<List<User>> allUsers =   AppLocalDB.db.userDao().getAll();
 
     public LiveData<List<User>> getAllUsers() {
         loadingState.setValue(LoadingState.loading);
-        ModelFirebase.getAllUsers((users)->{
-            allUsers.setValue(users);
-            loadingState.setValue(LoadingState.loaded);
+        Long localLastUpdate = User.getLocalLastUpdateTime();
+        ModelFirebase.getAllUsers(localLastUpdate,(users)->{
+            executorService.execute(()->
+            {
+                Long lastUpdate = new Long(0);
+                for (User user: users)
+                {
+                    if(!(user.isAvailable()))
+                    {
+                        AppLocalDB.db.userDao().delete(user);
+                    }
+                    else{
+                        AppLocalDB.db.userDao().insertAll(user);
+                    }
+                    if(lastUpdate < user.lastUpdated)
+                    {
+                        lastUpdate = user.lastUpdated;
+                    }
+                }
+                User.setLocalLastUpdateTime(lastUpdate);
+                loadingState.postValue(LoadingState.loaded);
+            });
         });
+
         return allUsers;
     }
 
     public void saveUser(User user, OnCompleteListener listener) {
         loadingState.setValue(LoadingState.loading);
         ModelFirebase.saveUser(user,()->{
+            getAllUsers();
             listener.onComplete();
         });
     }
 
     //wigs
-    MutableLiveData<List<Wig>> allWigs = new MutableLiveData<List<Wig>>(new LinkedList<Wig>());
+    LiveData<List<Wig>> allWigs =   AppLocalDB.db.wigDao().getAll();
 
     public LiveData<List<Wig>> getAllWigs() {
         loadingState.setValue(LoadingState.loading);
-        ModelFirebase.getAllWigs((wigs)->{
-            allWigs.setValue(wigs);
-            loadingState.setValue(LoadingState.loaded);
+        Long localLastUpdate = Wig.getLocalLastUpdateTime();
+        ModelFirebase.getAllWigs(localLastUpdate,(wigs)->{
+            executorService.execute(()->
+            {
+                Long lastUpdate = new Long(0);
+                for (Wig wig: wigs)
+                {
+                    if(!(wig.isAvailable()))
+                    {
+                        AppLocalDB.db.wigDao().delete(wig);
+                    }
+                    else{
+                        AppLocalDB.db.wigDao().insertAll(wig);
+                    }
+                    if(lastUpdate < wig.lastUpdated)
+                    {
+                        lastUpdate = wig.lastUpdated;
+                    }
+                }
+                Wig.setLocalLastUpdateTime(lastUpdate);
+                loadingState.postValue(LoadingState.loaded);
+            });
         });
+
         return allWigs;
     }
+
+//    MutableLiveData<List<Wig>> allWigs = new MutableLiveData<List<Wig>>(new LinkedList<Wig>());
+//
+//    public LiveData<List<Wig>> getAllWigs() {
+//        loadingState.setValue(LoadingState.loading);
+//        ModelFirebase.getAllWigs((wigs)->{
+//            allWigs.setValue(wigs);
+//            loadingState.setValue(LoadingState.loaded);
+//        });
+//        return allWigs;
+//    }
 
     public void saveWig(Wig wig, OnCompleteListener listener) {
         loadingState.setValue(LoadingState.loading);
@@ -107,5 +162,8 @@ public class Model {
     public void setUser(User user, OnCompleteLogInListener listener) {
         this.user = user;
         listener.onComplete("Success");
+    }
+    public void setUser(User newUser){
+        user = user;
     }
 }
