@@ -62,4 +62,7 @@ public class AllWigsViewModel extends ViewModel {
         return currentPosition;
     }
 
+    public void refresh() {
+        Model.instance.getAllWigs();
+    }
 }

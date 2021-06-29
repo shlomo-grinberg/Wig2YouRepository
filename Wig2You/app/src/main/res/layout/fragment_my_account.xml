@@ -13,8 +13,9 @@
         android:layout_width="match_parent"
         android:layout_height="2dp"
         android:background="#FFFFFF"
-        app:layout_constraintTop_toBottomOf="@+id/myAccount_recyclerView"
-        tools:layout_editor_absoluteX="2dp" />
+        app:layout_constraintBottom_toTopOf="@+id/myAccount_swipeRefresh"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/myAccount_btn_allWigsBtn"
@@ -28,12 +29,12 @@
         android:textSize="21sp"
         app:backgroundTint="#DC6969"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/myAccount_recyclerView"
+        app:layout_constraintEnd_toEndOf="@+id/myAccount_swipeRefresh"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/myAccount_recyclerView"
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/myAccount_swipeRefresh"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="16dp"
@@ -43,7 +44,13 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView3"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintVertical_bias="1.0">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/myAccount_recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     <TextView
         android:id="@+id/textView3"
@@ -64,7 +71,7 @@
         android:layout_width="match_parent"
         android:layout_height="2dp"
         android:background="#FFFFFF"
-        app:layout_constraintBottom_toTopOf="@+id/myAccount_recyclerView"
+        app:layout_constraintBottom_toTopOf="@+id/myAccount_swipeRefresh"
         tools:layout_editor_absoluteX="2dp" />
 
     <ImageButton
@@ -94,7 +101,7 @@
         android:layout_height="29dp"
         android:layout_marginStart="16dp"
         android:src="@drawable/ic_baseline_exit_to_app"
-        app:layout_constraintBottom_toTopOf="@+id/myAccount_recyclerView"
+        app:layout_constraintBottom_toTopOf="@+id/myAccount_swipeRefresh"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

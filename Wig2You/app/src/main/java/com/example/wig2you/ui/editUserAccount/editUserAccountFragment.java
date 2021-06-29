@@ -23,11 +23,14 @@ import android.widget.TextView;
 
 import com.example.wig2you.Model.Model;
 import com.example.wig2you.Model.User;
+import com.example.wig2you.Model.Wig;
 import com.example.wig2you.R;
 import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.LinkedList;
+import java.util.List;
 
 public class editUserAccountFragment extends Fragment {
     View view;
@@ -38,6 +41,7 @@ public class editUserAccountFragment extends Fragment {
     EditText email;
     EditText password;
     Button saveBtn;
+    Button deleteBtn;
     ImageView image;
     public static double latitude =0;
     public static double longitude=0;
@@ -57,6 +61,8 @@ public class editUserAccountFragment extends Fragment {
         password =  view.findViewById(R.id.editUserAccount_et_password);
         image = view.findViewById(R.id.editUserAccount_et_imgView_user_image);
         addLocationOnMap = view.findViewById(R.id.editUserAccount_btn_addLocationOnMap);
+        deleteBtn = view.findViewById(R.id.editUserAccount_btn_delete);
+
         image.setOnClickListener(v->takePictureFromGallery());
 
         user = Model.instance.getUser();
@@ -74,7 +80,36 @@ public class editUserAccountFragment extends Fragment {
         if(imageBitmap!=null){
             image.setImageBitmap(imageBitmap);
         }
-
+        deleteBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                user.setAvailable(false);
+                List<Wig> wigList = Model.instance.getAllWigs().getValue();
+                List<Wig> newWigList = new LinkedList<>();
+                for (Wig w:wigList) {
+                    if(w.getOwner().equals(user.getId())){
+                        newWigList.add(w);
+                    }
+                }
+                if(newWigList.size()>0){
+                    for (Wig w:newWigList) {
+                        w.setAvailable(false);
+                        Model.instance.saveWig(w, new Model.OnCompleteListener() {
+                            @Override
+                            public void onComplete() {
+                             }
+                        });
+                    }
+                }
+                Model.instance.saveUser(user, new Model.OnCompleteListener() {
+                    @Override
+                    public void onComplete() {
+                        Model.instance.logOut();
+                        Navigation.findNavController(v).navigate(R.id.logInFragment);
+                    }
+                });
+            }
+        });
         saveBtn.setOnClickListener(v -> {
             save();
         });

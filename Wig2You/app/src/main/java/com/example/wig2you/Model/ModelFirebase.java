@@ -105,7 +105,7 @@ public class ModelFirebase {
     public static void getAllWigs(Long since, GetAllWigsListener listener) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection(wigsCollection)
-                .whereGreaterThanOrEqualTo(User.LAST_UPDATED,new Timestamp(since,0))
+                .whereGreaterThanOrEqualTo(Wig.LAST_UPDATED,new Timestamp(since,0))
                 .get()
                 .addOnCompleteListener(task -> {
                     List<Wig> list = new LinkedList<Wig>();

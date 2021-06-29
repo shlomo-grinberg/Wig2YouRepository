@@ -45,4 +45,8 @@ public class MyAccountViewModel extends ViewModel {
 
         return currentPosition;
     }
+
+    public void refresh() {
+        Model.instance.getAllWigs();
+    }
 }

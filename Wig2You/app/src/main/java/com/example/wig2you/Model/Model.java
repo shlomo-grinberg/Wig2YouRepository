@@ -1,6 +1,7 @@
 package com.example.wig2you.Model;
 
 import android.graphics.Bitmap;
+import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -14,7 +15,7 @@ public class Model {
 
     final public static  Model instance = new Model();
     User user;
-    ExecutorService executorService = Executors.newSingleThreadExecutor();
+    ExecutorService executorService = Executors.newCachedThreadPool();
 
     public enum LoadingState{
         loaded,
@@ -81,6 +82,7 @@ public class Model {
     LiveData<List<Wig>> allWigs =   AppLocalDB.db.wigDao().getAll();
 
     public LiveData<List<Wig>> getAllWigs() {
+        Log.d("TAG","getAllWigs");
         loadingState.setValue(LoadingState.loading);
         Long localLastUpdate = Wig.getLocalLastUpdateTime();
         ModelFirebase.getAllWigs(localLastUpdate,(wigs)->{
@@ -89,6 +91,9 @@ public class Model {
                 Long lastUpdate = new Long(0);
                 for (Wig wig: wigs)
                 {
+                    Log.d("TAG",wig.isAvailable() +"");
+                    Log.d("TAG",allWigs.getValue().size() +"");
+
                     if(!(wig.isAvailable()))
                     {
                         AppLocalDB.db.wigDao().delete(wig);

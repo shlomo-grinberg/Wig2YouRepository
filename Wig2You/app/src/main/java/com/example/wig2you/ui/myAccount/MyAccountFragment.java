@@ -17,6 +17,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.wig2you.Model.Model;
 import com.example.wig2you.Model.Wig;
@@ -31,6 +32,8 @@ public class MyAccountFragment extends Fragment {
     ImageButton editUserAccount;
     ImageView logOutIV;
     Button allWigsBtn;
+    SwipeRefreshLayout swipeRefreshLayout;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -50,6 +53,10 @@ public class MyAccountFragment extends Fragment {
         allWigsBtn = view.findViewById(R.id.myAccount_btn_allWigsBtn);
         logOutIV = view.findViewById(R.id.myAccount_imageView_logOut);
         editUserAccount = view.findViewById(R.id.myAccount_imageButtonEditUser);
+        swipeRefreshLayout = view.findViewById(R.id.myAccount_swipeRefresh);
+
+        swipeRefreshLayout.setOnRefreshListener(()->myAccountViewModel.refresh());
+
         addWigImgBtn.setOnClickListener(Navigation.createNavigateOnClickListener(R.id.addWig_fragment));
         allWigsBtn.setOnClickListener(Navigation.createNavigateOnClickListener(R.id.allWigs_Fragment));
         editUserAccount.setOnClickListener(Navigation.createNavigateOnClickListener(R.id.editUserAccountFragment));
@@ -77,12 +84,13 @@ public class MyAccountFragment extends Fragment {
             switch(state){
                 case loaded:
                     pb.setVisibility(View.GONE);
+                    swipeRefreshLayout.setRefreshing(false);
                     break;
                 case loading:
                     pb.setVisibility(View.VISIBLE);
+                    swipeRefreshLayout.setRefreshing(true);
                     break;
                 case error:
-                    //TODO: display error message
             }
         });
 

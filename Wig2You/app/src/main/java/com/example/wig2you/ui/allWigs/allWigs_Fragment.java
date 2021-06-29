@@ -18,6 +18,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.wig2you.Model.Model;
 import com.example.wig2you.Model.User;
@@ -33,6 +34,9 @@ public class allWigs_Fragment extends Fragment {
     ImageButton replayAll;
     ImageButton mapBtn;
     ImageButton myAccountBtn;
+    SwipeRefreshLayout swipeRefreshLayout;
+
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -53,7 +57,9 @@ public class allWigs_Fragment extends Fragment {
         mapBtn = view.findViewById(R.id.allWigs_ImageBtn_mapBtn);
         replayAll = view.findViewById(R.id.allWigs_ImageBtn_ReplayAllWigs);
         myAccountBtn = view.findViewById(R.id.allWigs_ImageBtn_myAccount);
+        swipeRefreshLayout = view.findViewById(R.id.allWigs_swipeRefresh);
 
+        swipeRefreshLayout.setOnRefreshListener(()->allWigsViewModel.refresh());
         replayAll.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -97,9 +103,11 @@ public class allWigs_Fragment extends Fragment {
             switch(state){
                 case loaded:
                     pb.setVisibility(View.GONE);
+                    swipeRefreshLayout.setRefreshing(false);
                     break;
                 case loading:
                     pb.setVisibility(View.VISIBLE);
+                    swipeRefreshLayout.setRefreshing(true);
                     break;
                 case error:
                     //TODO: display error message

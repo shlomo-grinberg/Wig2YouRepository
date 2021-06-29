@@ -22,8 +22,9 @@
         android:layout_width="match_parent"
         android:layout_height="2dp"
         android:background="#FFFFFF"
-        app:layout_constraintBottom_toTopOf="@+id/allWigs_recyclerView"
-        tools:layout_editor_absoluteX="2dp" />
+        app:layout_constraintBottom_toTopOf="@+id/allWigs_swipeRefresh"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <ImageButton
         android:id="@+id/allWigs_ImageBtn_ReplayAllWigs"
@@ -47,15 +48,21 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/allWigs_recyclerView"
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/allWigs_swipeRefresh"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/allWigs_ImageBtn_mapBtn" />
+        app:layout_constraintTop_toBottomOf="@+id/allWigs_ImageBtn_mapBtn">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/allWigs_recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     <ImageButton
         android:id="@+id/allWigs_ImageBtn_myAccount"
