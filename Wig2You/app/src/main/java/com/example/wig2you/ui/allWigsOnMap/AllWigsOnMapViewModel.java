@@ -6,6 +6,8 @@ import androidx.lifecycle.ViewModel;
 import com.example.wig2you.Model.Model;
 import com.example.wig2you.Model.User;
 import com.example.wig2you.Model.Wig;
+import com.example.wig2you.ui.allWigs.AllWigsViewModel;
+import com.google.android.gms.maps.model.LatLng;
 
 import java.util.Collection;
 import java.util.Dictionary;
@@ -14,10 +16,11 @@ import java.util.List;
 import java.util.Map;
 
 public class AllWigsOnMapViewModel extends ViewModel {
-
-    Map<String, User> usersDic;
+    private Map<String, User> usersDic;
     private LiveData<List<User>> usersList;
     private LiveData<List<Wig>> wigsList;
+
+
     public AllWigsOnMapViewModel() {
         usersDic = new Hashtable<>();
         wigsList = Model.instance.getAllWigs();
@@ -26,11 +29,11 @@ public class AllWigsOnMapViewModel extends ViewModel {
             if(w.getOwner()!=null){
                 boolean isExsits = usersDic.containsKey(w.getOwner());
                 if(!isExsits){
-                    User u = new User();
+                    User u = null;
                     for (User user:usersList.getValue()) {
                         if(user.getId().equals(w.owner)) u = user;
                     }
-                    usersDic.put(u.getId(),u);
+                    if(u!=null) usersDic.put(u.getId(),u);
                 }
             }
         }
@@ -39,15 +42,15 @@ public class AllWigsOnMapViewModel extends ViewModel {
     public Collection<User> GetDicUsers(){
         return usersDic.values();
     }
-    public User getUserByLocation(Double latitude, Double longitude){
+    public void getUserByLocation(LatLng latLng){
         User user = new User();
         for (User u:usersDic.values()) {
-            if(u.getLatitude()== latitude && u.getLongitude()==longitude){
+            if(u.getLatitude()== latLng.latitude && u.getLongitude()==latLng.longitude){
                 user = u;
                 break;
             }
         }
-        return user;
+        AllWigsViewModel.setUserSeller(user);
     }
 
 

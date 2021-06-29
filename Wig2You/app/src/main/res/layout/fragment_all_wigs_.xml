@@ -26,12 +26,12 @@
         tools:layout_editor_absoluteX="2dp" />
 
     <ImageButton
-        android:id="@+id/allWigs_ImageBtn_sortBtn"
+        android:id="@+id/allWigs_ImageBtn_ReplayAllWigs"
         android:layout_width="30dp"
         android:layout_height="30dp"
         android:layout_marginStart="8dp"
         android:background="#EA947E"
-        android:src="@drawable/ic_baseline_sort_24"
+        android:src="@drawable/ic_baseline_reply_all_24"
         app:layout_constraintBottom_toBottomOf="@+id/allWigs_ImageBtn_mapBtn"
         app:layout_constraintStart_toEndOf="@+id/allWigs_ImageBtn_mapBtn"
         app:layout_constraintTop_toTopOf="@+id/allWigs_ImageBtn_mapBtn" />

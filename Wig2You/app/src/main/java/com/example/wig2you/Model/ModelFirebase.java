@@ -43,26 +43,23 @@ public class ModelFirebase {
     //users
     public static void getAllUsers(GetAllUsersListener listener) {
 
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection(usersCollection)
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            db.collection(usersCollection)
+                    .get()
+                    .addOnCompleteListener(task -> {
                         List<User> list = new LinkedList<User>();
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot document : task.getResult()) {
-                                User user =User.create(document.getData());
+                                User user = User.create(document.getData());
                                 if(user.isAvailable()){
                                     list.add(user);
                                 }
                             }
-                        } else {
-
-                        }
+                        } else {}
                         listener.onComplete(list);
-                    }
-                });
+                    });
+
+
     }
     public static void saveUser(User user ,Model.OnCompleteListener listener) {
         FirebaseAuth mAuth = FirebaseAuth.getInstance();

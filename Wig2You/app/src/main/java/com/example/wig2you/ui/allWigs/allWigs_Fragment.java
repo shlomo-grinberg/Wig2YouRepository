@@ -11,21 +11,25 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.wig2you.Model.Model;
+import com.example.wig2you.Model.User;
 import com.example.wig2you.Model.Wig;
 import com.example.wig2you.R;
-import com.example.wig2you.ui.myAccount.MyAccountFragment;
+import com.example.wig2you.ui.allWigsOnMap.AllWigsOnMapViewModel;
+import com.google.android.gms.maps.model.LatLng;
 import com.squareup.picasso.Picasso;
 
 public class allWigs_Fragment extends Fragment {
     AllWigsViewModel allWigsViewModel;
     MyAdapter adapter;
-    ImageButton sortBtn;
+    ImageButton replayAll;
     ImageButton mapBtn;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -35,18 +39,38 @@ public class allWigs_Fragment extends Fragment {
         allWigsViewModel  = new ViewModelProvider(this).
                 get(AllWigsViewModel.class);
 
-        allWigsViewModel.getData().observe(getViewLifecycleOwner(),
-                (data)->{
-                    adapter.notifyDataSetChanged();
-                });
+        User user = allWigsViewModel.getUserSeller();
+        if(user!=null){
+            allWigsViewModel.initUsersWigsList(user);
+        }
+        else {
+            allWigsViewModel.initWigList();
+        }
 
         View view = inflater.inflate(R.layout.fragment_all_wigs_, container, false);
         mapBtn = view.findViewById(R.id.allWigs_ImageBtn_mapBtn);
+        replayAll = view.findViewById(R.id.allWigs_ImageBtn_ReplayAllWigs);
+
+        replayAll.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AllWigsViewModel.setUserSeller(null);
+                FragmentManager manager = getActivity().getSupportFragmentManager();
+                FragmentTransaction ft = manager.beginTransaction();
+                Fragment newFragment = getParentFragment();
+                getParentFragment().onDestroy();
+                ft.remove(getParentFragment());
+                ft.replace(container.getId(),newFragment);
+                //container is the ViewGroup of current fragment
+                ft.addToBackStack(null);
+                ft.commit();
+            }
+        });
 
         mapBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Navigation.findNavController(view).navigate(R.id.allWigsOnMapFragment);
+                Navigation.findNavController(view).navigate(R.id.AllWigsOnMapFragment);
             }
         });
 
@@ -84,7 +108,6 @@ public class allWigs_Fragment extends Fragment {
 
         return view;
     }
-
 
     static class MyViewHolder extends RecyclerView.ViewHolder{
         OnItemClickListener listener;
@@ -144,12 +167,12 @@ public class allWigs_Fragment extends Fragment {
         }
         @Override
         public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-            Wig wig = allWigsViewModel.getData().getValue().get(position);
+            Wig wig = allWigsViewModel.getData().get(position);
             holder.bind(wig);
         }
         @Override
         public int getItemCount() {
-            return allWigsViewModel.getData().getValue().size();
+            return allWigsViewModel.getData().size();
         }
 
     }

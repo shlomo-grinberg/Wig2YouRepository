@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.Navigation;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -21,6 +22,7 @@ import com.example.wig2you.Model.User;
 import com.example.wig2you.Model.Wig;
 import com.example.wig2you.R;
 import com.example.wig2you.ui.allWigs.AllWigsViewModel;
+import com.example.wig2you.ui.myAccount.MyAccountFragmentDirections;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -60,7 +62,6 @@ public class allWigsOnMapFragment extends Fragment implements OnMapReadyCallback
         return view;
     }
 
-
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -87,13 +88,16 @@ public class allWigsOnMapFragment extends Fragment implements OnMapReadyCallback
         mGoogleMap.setMyLocationEnabled(true);
         mGoogleMap.getUiSettings().setZoomControlsEnabled(true);
         for (User u: allWigsOnMapViewModel.GetDicUsers()) {
-            MarkerOptions markerOptions = new MarkerOptions().position(new LatLng(u.getLatitude(),u.getLongitude())).title("I am here");
+            LatLng location = new LatLng(u.getLatitude(),u.getLongitude());
+            MarkerOptions markerOptions = new MarkerOptions().position(location);
             mGoogleMap.addMarker(markerOptions);
         }
 
         mGoogleMap.setOnMarkerClickListener(marker -> {
-            Log.d("TAg", "Clicked My");
-            return false;
+            LatLng latLng = marker.getPosition();
+            allWigsOnMapViewModel.getUserByLocation(latLng);
+            Navigation.findNavController(view).navigate(R.id.allWigs_Fragment);
+            return true;
         });
     }
 

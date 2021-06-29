@@ -17,6 +17,9 @@
         <action
             android:id="@+id/action_allWigs_Fragment_to_wigDetailsOtherFragment"
             app:destination="@id/wigDetailsOtherFragment" />
+        <action
+            android:id="@+id/action_allWigs_Fragment_to_allWigsOnMapFragment"
+            app:destination="@id/AllWigsOnMapFragment" />
     </fragment>
     <fragment
         android:id="@+id/editWig_Fragment"
@@ -44,9 +47,6 @@
         <action
             android:id="@+id/action_myAccountFragment_to_editUserAccountFragment"
             app:destination="@id/editUserAccountFragment" />
-        <action
-            android:id="@+id/action_myAccountFragment_to_allWigsOnMapFragment"
-            app:destination="@id/allWigsOnMapFragment" />
     </fragment>
     <fragment
         android:id="@+id/signUpFragment"
@@ -105,12 +105,12 @@
         android:label="Edit User Account"
         tools:layout="@layout/fragment_edit_user_account" />
     <fragment
-        android:id="@+id/allWigsOnMapFragment"
+        android:id="@+id/AllWigsOnMapFragment"
         android:name="com.example.wig2you.ui.allWigsOnMap.allWigsOnMapFragment"
         android:label="All Wigs On Map"
         tools:layout="@layout/fragment_all_wigs_on_map">
         <action
-            android:id="@+id/action_allWigsOnMapFragment_to_myAccountFragment"
-            app:destination="@id/myAccountFragment" />
+            android:id="@+id/action_allWigsOnMapFragment_to_allWigs_Fragment"
+            app:destination="@id/allWigs_Fragment" />
     </fragment>
 </navigation>
