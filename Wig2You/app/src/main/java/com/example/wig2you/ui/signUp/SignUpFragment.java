@@ -98,7 +98,12 @@ public class SignUpFragment extends Fragment{
                 if (imageBitmap!=null){
                     Model.instance.uploadImage(imageBitmap,user.getId(),(url)->{
                         user.setImage(url);
-                        Model.instance.saveUser(user,()->Navigation.findNavController(view).navigate(R.id.myAccountFragment));
+                        Model.instance.saveUser(user,()->{
+                            Model.instance.login(email.getText().toString(),password.getText().toString(),(val)->{
+                                if (!val.equals("Failure")){
+                                    Navigation.findNavController(view).navigate(R.id.myAccountFragment);
+                                }});
+                        });
                     });
                 }
                 else  {

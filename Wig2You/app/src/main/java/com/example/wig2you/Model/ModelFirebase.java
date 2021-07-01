@@ -154,7 +154,13 @@ public class ModelFirebase {
                             db.collection(usersCollection).document(firebaseUser.getUid()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                                 @Override
                                 public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                    Model.instance.setUser(User.create(documentSnapshot.getData()),(val)->listener.onComplete(val));
+                                    User user = User.create(documentSnapshot.getData());
+                                    if(user.isAvailable()){
+                                        Model.instance.setUser(user,(val)->listener.onComplete(val));
+                                    }
+                                    else {
+                                        FirebaseAuth.getInstance().signOut() ;
+                                    }
                                 }
                             }).addOnFailureListener(new OnFailureListener() {
                                 @Override

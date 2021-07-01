@@ -114,17 +114,6 @@ public class Model {
         return allWigs;
     }
 
-//    MutableLiveData<List<Wig>> allWigs = new MutableLiveData<List<Wig>>(new LinkedList<Wig>());
-//
-//    public LiveData<List<Wig>> getAllWigs() {
-//        loadingState.setValue(LoadingState.loading);
-//        ModelFirebase.getAllWigs((wigs)->{
-//            allWigs.setValue(wigs);
-//            loadingState.setValue(LoadingState.loaded);
-//        });
-//        return allWigs;
-//    }
-
     public void saveWig(Wig wig, OnCompleteListener listener) {
         loadingState.setValue(LoadingState.loading);
         ModelFirebase.saveWig(wig,()->{
@@ -150,10 +139,11 @@ public class Model {
 
     //session
     public void logOut(){
+        this.setUser(null);
         ModelFirebase.signOut();
     }
     public void login(String email, String password, OnCompleteLogInListener listener) {
-        ModelFirebase.login(email, password, (val) -> listener.onComplete(val));
+            ModelFirebase.login(email, password, (val) -> listener.onComplete(val));
     }
 
 
@@ -169,6 +159,6 @@ public class Model {
         listener.onComplete("Success");
     }
     public void setUser(User newUser){
-        user = user;
+        user = newUser;
     }
 }
